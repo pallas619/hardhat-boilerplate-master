@@ -13,12 +13,12 @@ const app = express();
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use('/static', express.static('src'));
+app.use('/static', express.static(path.join(__dirname, '../src')));
 app.use(cookieParser());
 
 // Set the view engine to ejs
 app.set('view engine', 'ejs');
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, '../public')));
 
 // Home page route
 app.get('/', function(request, response) {
