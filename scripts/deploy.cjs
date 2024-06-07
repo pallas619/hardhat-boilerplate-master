@@ -1,22 +1,33 @@
 const path = require("path");
-const fs = require("fs");
 
 async function main() {
-    // ethers dan artifacts tersedia dalam global scope oleh hardhat
-    const [deployer] = await hre.ethers.getSigners();
-    console.log("Deploying the contracts with the account:", await deployer.getAddress());
+    // This is just a convenience check
+    if (network.name === "hardhat") {
+        console.warn(
+            "You are trying to deploy a contract to the Hardhat Network, which" +
+            "gets automatically created and destroyed every time. Use the Hardhat" +
+            " option '--network localhost'"
+        );
+    }
 
-    const Voting = await hre.ethers.getContractFactory("Voting");
-    const voting = await Voting.deploy();
-    await voting.deployed();
+    // ethers is available in the global scope
+    const [deployer] = await ethers.getSigners();
+    console.log(
+        "Deploying the contracts with the account:",
+        await deployer.getAddress()
+    );
 
-    console.log("Voting smart contract address:", voting.address);
+    const Healthcare = await ethers.getContractFactory("Healthcare");
+    const healthcare = await Healthcare.deploy();
 
-    // Simpan artifacts dan alamat kontrak di frontend directory
-    saveFrontendFiles(voting);
+    console.log("Healthcare smart contract address:", healthcare.address);
+
+    // We also save the contract's artifacts and address in the frontend directory
+    saveFrontendFiles(healthcare);
 }
 
-function saveFrontendFiles(voting) {
+function saveFrontendFiles(healthcare) {
+    const fs = require("fs");
     const contractsDir = path.join(__dirname, "..", "src", "contracts");
 
     if (!fs.existsSync(contractsDir)) {
@@ -25,14 +36,14 @@ function saveFrontendFiles(voting) {
 
     fs.writeFileSync(
         path.join(contractsDir, "contract-address.json"),
-        JSON.stringify({ Voting: voting.address }, undefined, 2)
+        JSON.stringify({ Healthcare: healthcare.address }, undefined, 2)
     );
 
-    const VotingArtifact = artifacts.readArtifactSync("Voting");
+    const HealthcareArtifact = artifacts.readArtifactSync("Healthcare");
 
     fs.writeFileSync(
-        path.join(contractsDir, "Voting.json"),
-        JSON.stringify(VotingArtifact, null, 2)
+        path.join(contractsDir, "Healthcare.json"),
+        JSON.stringify(HealthcareArtifact, null, 2)
     );
 }
 

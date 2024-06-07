@@ -5,7 +5,7 @@
     "chai": "^4.4.1",
     "ethers": "^6.13.0"
   },
-  "type": "commonjs",
+  "type": "module",
   "dependencies": {
     "cookie-parser": "^1.4.6",
     "ejs": "^3.1.10",
