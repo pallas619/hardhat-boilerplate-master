@@ -1,21 +1,54 @@
+// We'll use ethers to interact with the Ethereum network and our contract
 import { ethers } from "ethers";
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
+//import fs from 'node:fs';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// We import the contract's artifacts and address here, as we are going to be
+// using them with ethers
+import HealthcareArtifact from "../contracts/Healthcare.json" with { type: "json"};
+import contractAddress from "../contracts/contract-address.json" with { type: "json"};
 
-const contractArtifact = JSON.parse(
-    fs.readFileSync(path.resolve(__dirname, "../contracts/Healthcare.json"), "utf8")
-);
-const contractAddress = JSON.parse(
-    fs.readFileSync(path.resolve(__dirname, "../contracts/contract-address.json"), "utf8")
-).Healthcare;
+//to do
+//ganti connect ke Metamask!
+const provider = new ethers.JsonRpcProvider("http://localhost:8545");
+
+/*export function readFile({path}) {
+    let data = fs.readFileSync(path, 'utf8');
+    return JSON.parse(data);
+}*/
 
 export async function constructSmartContract() {
-    const provider = new ethers.providers.JsonRpcProvider("http://localhost:8545");
-    const signer = provider.getSigner();
-    const contract = new ethers.Contract(contractAddress, contractArtifact.abi, signer);
-    return contract;
+    return (new ethers.Contract(ethers.getAddress(contractAddress.Healthcare), HealthcareArtifact.abi, await provider.getSigner(0)));
 }
+
+/*export function getAddress() {
+    console.log(contractAddress);
+    //let obj = fs.readFile(contractAddress);
+    return (ethers.utils.getAddress(obj.address));
+}
+
+export function getContractABI() {
+    let obj = fs.readFile(VotingArtifact);
+    return (obj.abi);
+}*/
+
+/*
+var self = module.exports = {
+    readFile: function (path) {
+        let data = fs.readFileSync(path, 'utf8');
+        return JSON.parse(data);
+    },
+    
+    constructSmartContract: function (address, abi) {
+        //return new web3.eth.Contract(abi, address);
+        return new ethers.Contract(address, abi, provider.getSigner(0));
+    },
+
+    getContractAddress: function () {
+        let obj = self.readFile(contractAddress);
+        return ethers.utils.getAddress(obj.address);
+    },
+    getContractABI: function () {
+        let obj = self.readFile(VotingArtifact);
+        return obj.abi;
+    }
+}*/
