@@ -1,6 +1,13 @@
+// require("@nomiclabs/hardhat-waffle");
+// require("@nomiclabs/hardhat-ethers");
 require("@nomicfoundation/hardhat-toolbox")
 
-/** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
-  solidity: "0.8.24",
+  solidity: "0.8.0",
+  networks: {
+    hardhat: {},
+    localhost: {
+      url: "http://localhost:3000"  
+    }
+  }
 };

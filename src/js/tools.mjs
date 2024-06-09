@@ -10,7 +10,6 @@ import contractAddress from "../contracts/contract-address.json" with { type: "j
 //to do
 //ganti connect ke Metamask!
 const provider = new ethers.JsonRpcProvider("http://localhost:8545");
-
 /*export function readFile({path}) {
     let data = fs.readFileSync(path, 'utf8');
     return JSON.parse(data);

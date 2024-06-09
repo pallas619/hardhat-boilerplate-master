@@ -26,7 +26,7 @@ async function main() {
     const Healthcare = await hre.ethers.getContractFactory("Healthcare");
     const healthcare = await Healthcare.deploy();
 
-    console.log("Healthcare smart contract address:", healthcare.target);
+    console.log("Healthcare smart contract address:", healthcare.target   );
 
     // Save the contract's artifacts and address in the frontend directory
     saveFrontendFiles(healthcare);
