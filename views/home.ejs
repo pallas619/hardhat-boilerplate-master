@@ -18,14 +18,7 @@
                     </div>
                     <div class="card-body">
                         <ul class="list-group">
-                            <% patients.forEach(function(patient) { %>
-                                <li class="list-group-item">
-                                    <strong>Nama:</strong> <%= patient.name %> | 
-                                    <strong>Usia:</strong> <%= patient.age %> tahun | 
-                                    <strong>Jenis Kelamin:</strong> <%= patient.gender %> | 
-                                    <strong>Diagnosis:</strong> <%= patient.diagnosis %>
-                                </li>
-                            <% }); %>
+                            
                         </ul>
                     </div>
                 </div>
@@ -36,7 +29,7 @@
                         <h2 class="card-title">Tambah Pasien</h2>
                     </div>
                     <div class="card-body">
-                        <button class="btn btn-primary btn-block" onclick="addPatient()">Tambah Pasien</button>
+                        <a class="btn btn-primary btn-block" href="{{ route('/') }}">Tambah Pasien</a>
                     </div>
                 </div>
             </div>
@@ -47,11 +40,11 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-    <script>
+    <!-- <script>
         function addPatient() {
             // Ganti URL sesuai dengan URL untuk menambahkan pasien
             window.location.href = "/add_patient";
         }
-    </script>
+    </script> -->
 </body>
 </html>
