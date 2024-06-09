@@ -22,7 +22,7 @@ app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/', function(request,response) {
-    response.render('pages/registration');
+    response.render('login');
 });
 
 // app.post('/registration', async (request, response) => {
