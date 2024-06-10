@@ -1,5 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
+import moment from "moment";
+import axios from "axios";
 import { PrismaClient } from "@prisma/client";
 import * as tools from './tools.mjs';
 import cookieParser from 'cookie-parser';
@@ -12,11 +14,13 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+
 const prisma = new PrismaClient();
 const RC = await tools.constructSmartContract();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use('/static', express.static('src'));
@@ -79,65 +83,150 @@ app.get("/Staff", async (req, res) => {
     }
 });
 
-// Commented out code for future implementation
 
-// app.post('/registration', async (req, res) => {
-//     var addr = req.body.address;
-//     var pwd = req.body.password;
-//     try {
-//         let tx = await RC.registerVoter(addr);
-//         console.log(tx);
-//         res.send("<p id='accountAddress'>Successfully Registered: " + addr + "</p>");
-//     } catch (err) {
-//         console.log(err);
-//     }
+
+//create 
+// app.post("/Patient", async (req, res) => {
+//     const newPatientData = req.body;
+
+//     const patient = await prisma.patient.create({
+//         data: {
+//             firstName: newPatientData.firstName,
+//             lastName: newPatientData.lastName,    
+//             email: newPatientData.email,       
+//             age:newPatientData.age,
+//             diagnosis: newPatientData.diagnosis,
+//             gender: newPatientData.gender,    
+//             phoneNumber: newPatientData.phoneNumber,
+//             dateOfBirth: newPatientData.dateOfBirth,
+//             doctors: newPatientData.doctors,
+//             staff: newPatientData.staff,      
+//             staffId:newPatientData.staff,
+//         },
+
+//     });
+//    res.send({
+//     data: patient,
+//     message:"add patient success"
+//    });
 // });
 
-// app.post('/auth', async (req, res) => {
-//     var addr = req.body.address;
-//     var pwd = req.body.password;
+// Route untuk menambah Staff
+app.post('/staff', async (req, res) => {
+    const { name } = req.body;
+    try {
+        const staff = await prisma.staff.create({
+            data: {
+                name: name,
+            },
+        });
+        res.status(201).json(staff);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
+
+
+// Route untuk menambah Doctor
+app.post('/doctor', async (req, res) => {
+    const { address, name, specialization, staffId } = req.body;
+    try {
+        const doctor = await prisma.doctor.create({
+            data: {
+                address: address,
+                name: name,
+                specialization: specialization,
+                staffId: staffId,
+            },
+        });
+        res.status(201).json(doctor);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
+
+// Route untuk menambah Patient
+app.post('/patient', async (req, res) => {
+    const { address, name, age, medicalHistory, doctorId, staffId } = req.body;
+    try {
+        const patient = await prisma.patient.create({
+            data: {
+                address: address,
+                name: name,
+                age: age,
+                medicalHistory: medicalHistory,
+                doctorId: doctorId,
+                staffId: staffId,
+            },
+        });
+        res.status(201).json(patient);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
+
+// app.post("/Patient", async (req, res) => {
+//     const newPatientData = req.body;
+
+//     // Format dateOfBirth using moment.js
+//     const formattedDateOfBirth = moment(newPatientData.dateOfBirth).format();
+
+//     // Validate dateOfBirth format
+//     if (!moment(newPatientData.dateOfBirth, moment.ISO_8601, true).isValid()) {
+//         return res.status(400).send({
+//             message: "Invalid dateOfBirth format"
+//         });
+//     }
+
+//     // Ensure that doctors is an array of IDs
+//     let doctorsArray = [];
+//     if (Array.isArray(newPatientData.doctors)) {
+//         doctorsArray = newPatientData.doctors;
+//     } else if (typeof newPatientData.doctors === 'string') {
+//         // Assuming the string is a single doctor ID, wrap it in an array
+//         doctorsArray = [newPatientData.doctors];
+//     }
 
 //     try {
-//         RC.getVoter(addr).then(function(res) {
-//             console.log(res);
-//             if (res == true) {
-//                 res.cookie('addr', addr);
-//                 res.redirect('/voting');
-//             } else {
-//                 res.send();
+//         const patient = await prisma.patient.create({
+//             data: {
+//                 PatientName: newPatientData.PatientName,
+//                 email: newPatientData.email,
+//                 age: newPatientData.age,
+//                 diagnosis: newPatientData.diagnosis,
+//                 gender: newPatientData.gender,
+//                 phoneNumber: newPatientData.phoneNumber,
+//                 dateOfBirth: formattedDateOfBirth,
+//                 doctors: {
+//                     connect: doctorsArray.map(doctorId => ({
+//                         id: parseInt(doctorId) // Ensure doctorId is an integer
+//                     }))
+//                 },
+//                 staff: newPatientData.staff ? {
+//                     connectOrCreate: {
+//                         where: { id: parseInt(newPatientData.staff) }, // Ensure staff id is an integer
+//                         create: { id: parseInt(newPatientData.staff) }
+//                     }
+//                 } : undefined,
+//                 staffId: newPatientData.staff ? parseInt(newPatientData.staff) : undefined,
 //             }
 //         });
-//     } catch (err) {
-//         console.log(err);
+
+//         res.send({
+//             data: patient,
+//             message: "Add patient success"
+//         });
+//     } catch (error) {
+//         console.error("Error creating patient:", error);
+//         res.status(500).send({
+//             message: "An error occurred while adding the patient.",
+//             error: error.message
+//         });
 //     }
 // });
 
-// app.get('/voting', async (req, res) => {
-//     let candidateCounter = await RC.candCounter();
-//     var _addr = req.cookies.addr
-//     var _candObj = [];
-//     for (let i = 1; i <= candidateCounter; i++) {
-//         let _candidates = await RC.candidates(i);
-//         _candObj[i - 1] = { id: _candidates['id'], name: _candidates['name'], voteCount: _candidates['voteCount'] };
-//     }
-//     res.render('pages/voting', {
-//         candList: _candObj,
-//         addr: _addr
-//     });
-// });
 
-// app.post('/vote', async function (req, res) {
-//     console.log(req.body);
-//     var candId = req.body.candSelect;
-//     var addr = req.body.accountAddress;
-//     try {
-//         let tx = await RC.vote(candId, addr);
-//         console.log(tx);
-//         res.redirect('/voting');
-//     } catch (err) {
-//         console.log(err);
-//     }
-// });
+
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);

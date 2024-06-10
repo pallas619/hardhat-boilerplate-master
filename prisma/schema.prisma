@@ -13,34 +13,31 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Staff {
+  id       Int       @id @default(autoincrement())
+  name     String
+  doctors  Doctor[]
+  patients Patient[]
+}
+
 model Doctor {
-  id          Int       @id @default(autoincrement())
-  firstName   String
-  lastName    String
-  email       String    @unique
-  phoneNumber String
+  id             Int       @id @default(autoincrement())
+  address        String    @unique
+  name           String
   specialization String
-  patients    Patient[] @relation("DoctorPatients")
+  staffId        Int
+  patients       Patient[]
+  staff          Staff     @relation(fields: [staffId], references: [id])
 }
 
 model Patient {
-  id          Int       @id @default(autoincrement())
-  firstName   String
-  lastName    String
-  email       String    @unique
-  phoneNumber String
-  dateOfBirth DateTime
-  doctors     Doctor[]  @relation("DoctorPatients")
-  staff       Staff?    @relation(fields: [staffId], references: [id])
-  staffId     Int?
-}
-
-model Staff {
-  id          Int       @id @default(autoincrement())
-  firstName   String
-  lastName    String
-  email       String    @unique
-  phoneNumber String
-  role        String
-  patients    Patient[]
+  id             Int     @id @default(autoincrement())
+  address        String  @unique
+  name           String
+  age            Int
+  medicalHistory String
+  doctorId       Int
+  staffId        Int
+  doctor         Doctor  @relation(fields: [doctorId], references: [id])
+  staff          Staff   @relation(fields: [staffId], references: [id])
 }
