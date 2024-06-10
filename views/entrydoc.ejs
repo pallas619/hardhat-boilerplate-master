@@ -1,0 +1,36 @@
+<!-- entrydoc.ejs -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Login</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">Doctor Login</h1>
+        <div class="card mt-4">
+            <div class="card-body">
+                <div class="mt-4">
+                    <h3>Enter Doctor's Address</h3>
+                    <!-- Tambahkan action ke /entrydoc -->
+                    <form id="doctorForm" action="/check-doctor" method="post">
+                        <div class="form-group">
+                            <label for="address">Address</label>
+                            <input type="text" class="form-control" id="address" name="address" placeholder="Enter doctor's address">
+                        </div>
+                        <!-- Tambahkan tombol "Check Address" -->
+                        <button type="submit" class="btn btn-primary">Check Address</button>
+                    </form>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

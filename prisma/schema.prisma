@@ -15,29 +15,29 @@ datasource db {
 
 model Staff {
   id       Int       @id @default(autoincrement())
-  name     String
-  doctors  Doctor[]
-  patients Patient[]
+  address   String   @unique
+  password  String
 }
 
-model Doctor {
-  id             Int       @id @default(autoincrement())
-  address        String    @unique
-  name           String
-  specialization String
-  staffId        Int
-  patients       Patient[]
-  staff          Staff     @relation(fields: [staffId], references: [id])
-}
+// model Doctor {
+//   id             Int       @id @default(autoincrement())
+//   address        String    @unique
+//   name           String
+//   specialization String
+//   staffId        Int
+//   patients       Patient[]
+//   staff          Staff     @relation(fields: [staffId], references: [id])
+// }
 
-model Patient {
-  id             Int     @id @default(autoincrement())
-  address        String  @unique
-  name           String
-  age            Int
-  medicalHistory String
-  doctorId       Int
-  staffId        Int
-  doctor         Doctor  @relation(fields: [doctorId], references: [id])
-  staff          Staff   @relation(fields: [staffId], references: [id])
-}
+// model Patient {
+//   id            Int       @id @default(autoincrement())
+//   address       String    @unique
+//   name          String
+//   age           Int
+//   gender        String
+//   medicalHistory String
+//   doctorId      Int
+//   staffId       Int
+//   doctor        Doctor    @relation(fields: [doctorId], references: [id])
+//   staff         Staff     @relation(fields: [staffId], references: [id])
+// }

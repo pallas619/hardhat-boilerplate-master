@@ -2,74 +2,92 @@
 pragma solidity ^0.8.0;
 
 contract Healthcare {
+    address public admin;
+
+    constructor() {
+        admin = msg.sender;
+    }
+
+    enum Specialty {
+        Bedah,
+        Umum,
+        Anak
+    }
+    enum Gender {
+        LakiLaki,
+        Perempuan
+    }
+
     struct Patient {
         address id;
         string name;
         uint age;
         string medicalHistory;
+        Gender gender;
     }
 
     struct Doctor {
         address id;
         string name;
-        string specialization;
+        Specialty specialty;
     }
 
-    address public admin;
-    mapping(address => Patient) public patientRecords;
-    mapping(address => Doctor) public doctors;
-    mapping(address => bool) public authorizedDoctor;
-    mapping(string => address[]) public doctorsBySpecialization;
-    uint public doctorCount;
+    struct Staff {
+        string name;
+    }
 
-    event PatientRecordAdded(address id, string name);
-    event PatientRecordUpdated(address id, string name);
-    event DoctorAuthorized(address id, string name, string specialization);
+    mapping(address => Patient) public patients;
+    mapping(address => Doctor) public doctors;
+    mapping(address => Staff) public staff;
+    uint public patientCounter;
+    address[] public doctorList;
+
+    event PatientAdded(address patientId, string name, uint age, string medicalHistory, Gender gender);
+    event DoctorAdded(address doctorId, string name, Specialty specialty);
+    event StaffAdded(string name, address addr);
 
     modifier onlyAdmin() {
         require(msg.sender == admin, "Only admin can call this function");
         _;
     }
 
-    modifier onlyAuthorized() {
-        require(authorizedDoctor[msg.sender], "Not authorized");
-        _;
+    function addStaff(string memory _name, address _addr) public onlyAdmin {
+        staff[_addr] = Staff(_name);
+        emit StaffAdded(_name, _addr);
     }
 
-    constructor() {
-        admin = msg.sender;
+    function addDoctor(
+        address _id,
+        string memory _name,
+        Specialty _specialty
+    ) public {
+        doctors[_id] = Doctor(_id, _name, _specialty);
+        emit DoctorAdded(_id, _name, _specialty);
     }
 
-    function authorizeDoctor(address _doctor, string memory _name, string memory _specialization) public onlyAdmin {
-        require(!authorizedDoctor[_doctor], "Doctor is already authorized");
-        doctors[_doctor] = Doctor(_doctor, _name, _specialization);
-        authorizedDoctor[_doctor] = true;
-        doctorsBySpecialization[_specialization].push(_doctor);
-        doctorCount++;
-        emit DoctorAuthorized(_doctor, _name, _specialization);
+
+    function addPatient(
+        address id,
+        string memory _pname,
+        uint age,
+        string memory medicalHistory,
+        Gender gender
+    ) public {
+        patients[id] = Patient(id, _pname, age, medicalHistory, gender);
+        emit PatientAdded(id, _pname, age, medicalHistory, gender);
     }
 
-    function addPatientRecord(address _id, string memory _name, uint _age, string memory _medicalHistory) public onlyAuthorized {
-        require(patientRecords[_id].id == address(0), "Patient already exists");
-        patientRecords[_id] = Patient(_id, _name, _age, _medicalHistory);
-        emit PatientRecordAdded(_id, _name);
+    function getPatient(
+        address id
+    ) public view returns (address, string memory, uint, string memory ,Gender) {
+        Patient memory patient = patients[id];
+        return (patient.id, patient.name, patient.age, patient.medicalHistory, patient.gender);
     }
 
-    function updatePatientRecord(address _id, string memory _name, uint _age, string memory _medicalHistory) public onlyAuthorized {
-        require(patientRecords[_id].id != address(0), "Patient does not exist");
-        Patient storage patient = patientRecords[_id];
-        patient.name = _name;
-        patient.age = _age;
-        patient.medicalHistory = _medicalHistory;
-        emit PatientRecordUpdated(_id, _name);
-    }
-
-    function getPatientRecord(address _id) public view returns (Patient memory) {
-        require(patientRecords[_id].id != address(0), "Patient does not exist");
-        return patientRecords[_id];
-    }
-
-    function getDoctorsBySpecialization(string memory _specialization) public view returns (address[] memory) {
-        return doctorsBySpecialization[_specialization];
+    function getDoctor(
+        address _id
+    ) public view returns (address, string memory, Specialty) {
+        Doctor memory doctor = doctors[_id];
+        return (doctor.id, doctor.name, doctor.specialty);
     }
 }
